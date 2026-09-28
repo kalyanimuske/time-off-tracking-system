@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Pending: employee submits<br/>(HOLD −16h)
+    Pending --> Approved: admin approves<br/>(RELEASE +16h, USAGE −16h)
+    Pending --> Rejected: admin rejects<br/>(RELEASE +16h)
+    Pending --> Cancelled: employee cancels<br/>(RELEASE +16h)
+    Approved --> Cancelled: employee before it starts,<br/>or admin revokes with a reason<br/>(USAGE_REVERSAL +16h)
+    Rejected --> [*]
+    Cancelled --> [*]

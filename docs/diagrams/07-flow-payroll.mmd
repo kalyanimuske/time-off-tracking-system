@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor Admin
+    participant PS as Payroll Service
+    participant ES as Employee Service
+    participant TO as Time Off Service
+    participant L as Ledger
+
+    Admin->>PS: run payroll for Sep 1 - Sep 15
+    PS->>ES: employees, schedules, pay rates
+    PS->>TO: approved time off Sep 1 - 15? holidays?
+    TO-->>PS: Alice: Sep 14 sick day 8h (paid). Labor Day Sep 7
+    PS->>PS: Alice: 88h scheduled - 8h holiday - 8h time off = 72h worked
+    PS->>PS: pay (simplified): gross, benefits, taxes, net
+    PS->>TO: publish on_payroll_processed (run_id, Alice 72h, ...)
+    TO->>TO: Sick Leave: 72h / 30 x 1h = 2.4h
+    TO->>L: ACCRUAL +2.4h, key = payroll:run_id:alice:sick
+
+    Note over Admin,L: Same run published again (retry): hours unchanged, nothing posted
+    Admin->>PS: re-run with Alice 80h (correction)
+    PS->>TO: publish on_payroll_processed (same run_id, Alice 80h)
+    TO->>L: ADJUSTMENT +0.27h (only the difference)

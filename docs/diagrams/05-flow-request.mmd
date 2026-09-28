@@ -1,0 +1,23 @@
+sequenceDiagram
+    actor E as Employee
+    participant UI as Web UI
+    participant R as Request service
+    participant L as Ledger
+    actor A as Admin
+
+    E->>UI: picks Dec 23 - Dec 28
+    UI->>R: preview(days)
+    R-->>UI: 3 days count, Dec 25 holiday + weekend skipped, balance after
+    E->>UI: Submit
+    UI->>R: create_request
+    R->>R: checks: reason, on the policy for every day,<br/>no overlap, partial day not longer than a workday
+    R->>L: available balance?
+    L-->>R: 64h
+    R->>L: HOLD −24h
+    R-->>UI: Pending
+    A->>UI: Approve, note "Have fun!"
+    UI->>R: approve
+    R->>R: admin? not their own request? still pending?
+    R->>L: HOLD_RELEASE +24h
+    R->>L: USAGE −24h
+    R-->>UI: Approved (+ event + audit entry)

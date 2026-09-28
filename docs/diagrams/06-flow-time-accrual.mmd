@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant C as Scheduler (daily)
+    participant A as Accrual engine
+    participant P as Policy service
+    participant E as Employee service
+    participant L as Ledger
+
+    C->>A: run_time_based_accruals(today)
+    loop each policy assignment
+        A->>E: hire date, hours per day, termination
+        loop each period from assignment start to today
+            A->>P: which version was in effect at the period start?
+            A->>A: eligible days = period ∩ assignment ∩ employment ∩ waiting period
+            A->>A: amount = rate (tenure tier) x hours per day x proration
+            A->>A: cap at max balance if the policy has one
+            A->>L: post ACCRUAL, key = accrual:alice:vacation:monthly:2026-10-01
+            Note over L: key already exists = skip.<br/>So re-runs and catch-up are safe.
+        end
+    end

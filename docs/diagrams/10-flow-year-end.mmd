@@ -1,0 +1,9 @@
+flowchart TD
+    start[Jan 1: year-end for 2026] --> check{Is 2026 over?}
+    check -->|no| stop[Refuse to run]
+    check -->|yes| catchup[Post any missing accruals up to Dec 31]
+    catchup --> each[For each employee on the policy on Dec 31]
+    each --> bal[Balance as of Dec 31<br/>time off dated in January is NOT counted]
+    bal --> over{Balance above<br/>carryover cap?}
+    over -->|no| keep[Nothing to do]
+    over -->|yes| expire[Post EXPIRATION for the difference<br/>key = expire:alice:vacation:2026]

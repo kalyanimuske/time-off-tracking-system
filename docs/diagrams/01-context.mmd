@@ -1,0 +1,22 @@
+flowchart TB
+    emp([Employee]) --> ui
+    admin([Company admin]) --> ui
+
+    subgraph ours[What this take-home builds]
+        direction TB
+        ui[Web UI] -->|REST / JSON| tos[Time Off Service<br/>policies, balances, accruals,<br/>requests, approvals, audit]
+        tos --> db[(PostgreSQL)]
+    end
+
+    sched[Scheduler / cron] -->|daily: accruals<br/>Jan 1: year-end| tos
+
+    subgraph given[Existing services, given by the prompt. Simulated in app/external]
+        direction LR
+        es[Employee Service<br/>role, pay rate, hire date,<br/>schedule, location]
+        cs[Company Service<br/>company, locations,<br/>pay schedule]
+        ps[Payroll Service<br/>hours worked and pay<br/>per pay period]
+    end
+
+    tos -.->|1. reads employees| es
+    tos -.->|2. reads company| cs
+    ps ==>|3. asks for approved time off<br/>4. publishes on_payroll_processed,<br/>which Time Off is subscribed to| tos

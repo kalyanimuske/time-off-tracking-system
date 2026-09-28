@@ -1,0 +1,13 @@
+flowchart LR
+    subgraph v1[Version 1: from Jan 1]
+        r1[1.25 days a month<br/>carryover 40h]
+    end
+    subgraph v2[Version 2: from Oct 1]
+        r2[1.25 days a month<br/>carryover 80h]
+    end
+    v1 -->|admin edits on Sep 26,<br/>effective Oct 1| v2
+
+    j[Jan - Sep accruals] -.->|linked to| v1
+    o[Oct onward accruals] -.->|linked to| v2
+    a[(Audit log:<br/>Carryover: Up to 40h → Up to 80h<br/>by Dana, Sep 26)]
+    v2 -.-> a

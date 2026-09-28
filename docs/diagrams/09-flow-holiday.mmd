@@ -1,0 +1,7 @@
+flowchart TD
+    start[Admin adds a holiday<br/>on Oct 19] --> find[Find pending and approved requests<br/>that include Oct 19,<br/>for people the holiday applies to]
+    find --> each{For each request}
+    each -->|pending| hold[Post HOLD_RELEASE<br/>for that day's hours]
+    each -->|approved| usage[Post USAGE_REVERSAL<br/>for that day's hours]
+    hold --> zero[Set that day's minutes to 0<br/>+ audit entry on the request]
+    usage --> zero

@@ -1,0 +1,27 @@
+flowchart TB
+    api[API layer<br/>FastAPI routes, input validation, permissions]
+    bus{{on_payroll_processed<br/>from the Payroll Service}}
+    cron[Scheduler]
+
+    subgraph domain[Time Off Service: all business rules, no web or database code]
+        pol[Policy service<br/>policies, versions, assignments]
+        req[Request service<br/>preview, create, approve,<br/>reject, cancel]
+        hol[Holiday service]
+        acc[Accrual engine<br/>time based + hours worked]
+        ye[Year-end service<br/>carryover, expiration]
+        bal[Balance service<br/>summaries for the UI]
+        led[Ledger<br/>the ONLY place balances change]
+    end
+
+    store[(Storage: Postgres in production,<br/>in-memory in this demo)]
+
+    api --> pol & req & hol & bal
+    cron --> acc & ye
+    bus --> acc
+    req --> led
+    hol --> led
+    acc --> led
+    ye --> led
+    bal -.->|reads| led
+    led --> store
+    pol --> store
